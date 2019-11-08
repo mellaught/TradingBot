@@ -1,4 +1,4 @@
-package models
+package binance
 
 type TradeHistories struct {
 	Orders []TradeHistory `json:"orders"`
