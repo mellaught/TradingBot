@@ -1,46 +1,52 @@
 package main
 
 import (
-	"fmt"
+	"TradingBot/src/app"
+	"TradingBot/src/config"
+	"TradingBot/src/models"
+	"encoding/json"
+	"io/ioutil"
 	"log"
-	"time"
-	"tradingBot/src/config"
-	"tradingBot/src/exchanges/binance"
-	"tradingBot/src/models"
+	"os"
 )
 
 func main() {
 
 	cfg := config.NewViperConfig()
 
+	// Create viper struct.
 	conf := &models.Config{
-		BotToken: cfg.GetString("bot.token"),
+		BotToken: &models.BotConfig{},
 		Binance:  &models.ApiData{},
 		Bitforex: &models.ApiData{},
 		Bittrex:  &models.ApiData{},
 		Yobit:    &models.ApiData{},
 	}
 
+	// Read config.json -> viper
+	conf.Bot.Token = cfg.GetString("bot.token")
+	conf.Bot.Password = cfg.GetString("bot.password")
+	conf.Bot.NumberUsers = cfg.GetString("bot.Nmembers")
 	conf.Binance.ApiKey = cfg.GetString("binance.ApiKey")
 	conf.Binance.ApiSecret = cfg.GetString("binance.ApiSecret")
 
-	b := binance.CreateBinanceWrapper(conf.Binance)
+	// Read file with bot's members.
+	jsonFile, err := os.Open("app/arbitrator/html/default.json")
+	if err != nil {
+		if err.Error() == "open app/arbitrator/html/default.json: The system cannot find the file specified." {
+			log.Println("First use")
 
-	var dates = []string{"2019-11-05T12:46:26.0Z", "2019-11-05T12:49:26.0Z", "2019-11-05T12:50:26.0Z", "2019-11-05T12:53:26.0Z", "2019-11-05T12:55:26.0Z", "2019-11-05T12:58:26.0Z",
-		"2019-11-05T12:59:26.0Z", "2019-11-05T13:02:26.0Z", "2019-11-05T13:03:26.0Z", "2019-11-05T13:06:26.0Z"}
-
-	for i := 1; i < len(dates); i = i + 2 {
-		fmt.Println(dates[i-1], dates[i])
-		start, err := time.Parse(time.RFC3339, dates[i-1])
-		if err != nil {
-			log.Println("Error while parsing date start:", err)
+		} else {
+			log.Fatal(err)
 		}
-		end, err := time.Parse(time.RFC3339, dates[i])
-		if err != nil {
-			log.Println("Error while parsing date end:", err)
-		}
-		startTime := start.UnixNano() / 1e6
-		endTime := end.UnixNano() / 1e6
-		b.GetHistoryTrades(startTime, endTime, i+1)
+	} else {
+		defer jsonFile.Close()
+		byteValue, _ := ioutil.ReadAll(jsonFile)
+		json.Unmarshal(byteValue, &data)
 	}
+
+	app := app.NewApp(conf)
+	// Start App
+	app.Run()
+	log.Println("App started!")
 }

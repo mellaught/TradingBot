@@ -1,6 +1,9 @@
 package bot
 
 import (
+	"os"
+	"encoding/json"
+	"io/ioutil"
 	"fmt"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
@@ -9,8 +12,6 @@ import (
 const (
 	startCommand = "start"
 	getMainMenu  = "home"
-	subscribe    = "subscribe"
-	unsubscribe  = "unsubscribe"
 	settingsMenu = "settings"
 	cancelComm   = "cancel"
 	yescommand   = "yes"
@@ -43,4 +44,12 @@ func (b Bot) SendMessage(txt string, ChatId int64, kb interface{}) {
 	msg.DisableWebPagePreview = true
 	b.Bot.Send(msg)
 	b.Dlg[ChatId].MessageId++
+}
+
+// Write user's chosen to members.json(gitingore). 
+func WriteToJson(ChatId int64) {
+
+	
+	file, _ := json.Marshal(data)
+	_ = ioutil.WriteFile("members.json", file, os.ModePerm)
 }

@@ -1,8 +1,9 @@
 package bot
 
 import (
+	"TradingBot/src/models"
 	"log"
-	"tradingBot/src/models"
+	"strings"
 
 	//strt "bipbot/src/bipdev/structs"
 
@@ -10,17 +11,18 @@ import (
 )
 
 var (
-	CurrentPrice   float64
-	CurrnetMarkup  string
-	commands       = make(map[int64]string)
-	UserHistory    = make(map[int64]string)
-	MinterAddress  = make(map[int64]string)
-	BitcoinAddress = make(map[int64]string)
-	CoinToSell     = make(map[int64]string)
-	EmailAddress   = make(map[int64]string)
-	PriceToSell    = make(map[int64]float64)
-	SaveBuy        = make(map[int64]bool)
-	SaveSell       = make(map[int64]bool)
+	CurrentPrice      float64
+	CurrnetMarkup     string
+	commands          = make(map[int64]string)
+	UserHistory       = make(map[int64]string)
+	UserNotifications = make(map[int64]bool)
+	MinterAddress     = make(map[int64]string)
+	BitcoinAddress    = make(map[int64]string)
+	CoinToSell        = make(map[int64]string)
+	EmailAddress      = make(map[int64]string)
+	PriceToSell       = make(map[int64]float64)
+	SaveBuy           = make(map[int64]bool)
+	SaveSell          = make(map[int64]bool)
 )
 
 // Dialog is struct for dialog with user:   - ChatId: User's ChatID
@@ -46,14 +48,16 @@ type Bot struct {
 	Token string
 	Bot   *tgbotapi.BotAPI
 	Dlg   map[int64]*Dialog
+	pass  string
 }
 
 //InitBot initialization: loading the database, creating a bot by token from the config.
-func InitBot(config *models.Config) *Bot {
+func InitBot(config *models.BotConfig) *Bot {
 
 	b := Bot{
-		Token: config.BotToken,
+		Token: config.Token,
 		Dlg:   map[int64]*Dialog{},
+		pass:  config.Password,
 	}
 
 	// Create new bot
@@ -63,7 +67,6 @@ func InitBot(config *models.Config) *Bot {
 	}
 
 	b.Bot = bot
-	go b.Run()
 
 	return &b
 }
@@ -102,7 +105,17 @@ func (b *Bot) Run() {
 
 // TextMessageHandler
 func (b *Bot) TextMessageHandler(text string, ChatId int64) {
-
+	if strings.Contains(UserHistory[ChatId], "start") {
+		if text != b.pass {
+			b.SendMessage("Error password:(\nTry again, my friend!", ChatId, nil)
+			return
+		} else {
+			kb := b.NotificationsKb()
+			UserHistory[ChatId] = ""
+			b.SendMessage("Welcome to Trading Bot", ChatId, kb)
+			return
+		}
+	}
 }
 
 // assembleUpdate
@@ -150,30 +163,33 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 	// "/Start" interacting with the bot, bot description and available commands.
 	case startCommand:
 		UserHistory[ChatId] = "start"
-		b.SendMessage("Hello", ChatId, nil)
+		b.SendMessage("Hello!\n\nEnter pls password...", ChatId, nil)
 		return
 
-	// case cancelComm:
-	// 	b.CancelHandler(ChatId)
-
-	case subscribe:
-		// Subsctibe
-		b.SendMessage("Subscribe succesfull!", ChatId, nil)
+	// Subsctibe
+	case yescommand:
+		UserNotifications[ChatId] = true
+		b.SendMessage("Notificaions ON!", ChatId, nil)
+		WriteToJson(ChatId, true)
 		return
 
-	case unsubscribe:
-		// Unsubscribe
-		b.SendMessage("Unsubscribe succesfull!", ChatId, nil)
+	// Unsubscribe
+	case nocommand:
+
+		UserNotifications[ChatId] = false
+		b.SendMessage("Notificaions OFF!", ChatId, nil)
+		WriteToJson(ChatId, false)
 		return
 
-	case getMainMenu:
-		kb, txt, err := b.SendMenuMessage(ChatId)
-		if err != nil {
-			b.PrintAndSendError(err, ChatId)
-			return
-		}
+		// case getMainMenu:
+		// 	kb, txt, err := b.SendMenuMessage(ChatId)
+		// 	if err != nil {
+		// 		b.PrintAndSendError(err, ChatId)
+		// 		return
+		// 	}
 
-		b.SendMessage(txt, ChatId, kb)
-		return
+		// 	b.SendMessage(txt, ChatId, kb)
+		// 	return
+		// }
 	}
 }
