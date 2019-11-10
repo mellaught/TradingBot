@@ -14,7 +14,6 @@ const (
 	startCommand = "start"
 	getMainMenu  = "home"
 	settingsMenu = "settings"
-	cancelComm   = "cancel"
 	yescommand   = "yes"
 	nocommand    = "not"
 )
