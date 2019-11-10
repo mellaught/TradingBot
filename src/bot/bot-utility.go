@@ -1,10 +1,11 @@
 package bot
 
 import (
-	"os"
+	"TradingBot/src/models"
 	"encoding/json"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 )
@@ -46,10 +47,16 @@ func (b Bot) SendMessage(txt string, ChatId int64, kb interface{}) {
 	b.Dlg[ChatId].MessageId++
 }
 
-// Write user's chosen to members.json(gitingore). 
-func WriteToJson(ChatId int64) {
+// Write user's chosen to members.json(gitingore).
+func (b *Bot) WriteToJson(ChatId int64, flag bool) {
+	data := &models.Members{}
+	for i, m := range b.Members.M {
+		data.M[i] = &models.User{
+			ChatId:       m.ChatId,
+			Notification: m.Notification,
+		}
+	}
 
-	
 	file, _ := json.Marshal(data)
 	_ = ioutil.WriteFile("members.json", file, os.ModePerm)
 }

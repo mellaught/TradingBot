@@ -26,7 +26,7 @@ func main() {
 	// Read config.json -> viper
 	conf.Bot.Token = cfg.GetString("bot.token")
 	conf.Bot.Password = cfg.GetString("bot.password")
-	conf.Bot.NumberUsers = cfg.GetString("bot.Nmembers")
+	conf.Bot.MaxMembers = cfg.GetString("bot.Nmembers")
 	conf.Binance.ApiKey = cfg.GetString("binance.ApiKey")
 	conf.Binance.ApiSecret = cfg.GetString("binance.ApiSecret")
 
@@ -45,7 +45,7 @@ func main() {
 		json.Unmarshal(byteValue, &data)
 	}
 
-	app := app.NewApp(conf)
+	app := app.NewApp(conf, members)
 	// Start App
 	app.Run()
 	log.Println("App started!")

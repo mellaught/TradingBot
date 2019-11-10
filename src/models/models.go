@@ -23,17 +23,17 @@ type BotConfig struct {
 	// Password for author to start use bot.
 	Password string
 	// Max Members for bot.
-	// If current number users == NumberUsers the bot willn't continue the dialog.
-	NumberUsers int
+	// If current number of users == NaxMembers the bot willn't continue the dialog.
+	NaxMembers int
 }
 
 // Struct for members.json
 type Members struct {
-	Users []*User
+	M []*User `json:"Users"`
 }
 
 // Struct for User.
 type User struct {
-	ChatId       int64
-	Notification bool
+	ChatId       int64 `json:"ChatId"`
+	Notification bool  `json:"Notificaions"`
 }

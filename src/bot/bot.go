@@ -11,8 +11,6 @@ import (
 )
 
 var (
-	CurrentPrice      float64
-	CurrnetMarkup     string
 	commands          = make(map[int64]string)
 	UserHistory       = make(map[int64]string)
 	UserNotifications = make(map[int64]bool)
@@ -45,19 +43,21 @@ type Dialog struct {
 //							- Bot:	 tgbotapi Bot(token)
 //							- Dlg:   For dialog struct
 type Bot struct {
-	Token string
-	Bot   *tgbotapi.BotAPI
-	Dlg   map[int64]*Dialog
-	pass  string
+	Token   string
+	Bot     *tgbotapi.BotAPI
+	Dlg     map[int64]*Dialog
+	Members *models.Members
+	pass    string
 }
 
 //InitBot initialization: loading the database, creating a bot by token from the config.
-func InitBot(config *models.BotConfig) *Bot {
+func InitBot(config *models.BotConfig, members *models.Members) *Bot {
 
 	b := Bot{
-		Token: config.Token,
-		Dlg:   map[int64]*Dialog{},
-		pass:  config.Password,
+		Token:   config.Token,
+		Dlg:     map[int64]*Dialog{},
+		Members: &models.Members{},
+		pass:    config.Password,
 	}
 
 	// Create new bot
@@ -67,6 +67,7 @@ func InitBot(config *models.BotConfig) *Bot {
 	}
 
 	b.Bot = bot
+	b.Members = members
 
 	return &b
 }
@@ -169,16 +170,15 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 	// Subsctibe
 	case yescommand:
 		UserNotifications[ChatId] = true
-		b.SendMessage("Notificaions ON!", ChatId, nil)
-		WriteToJson(ChatId, true)
+		b.SendMessage("Notificaions ON", ChatId, nil)
+		b.WriteToJson(ChatId, true)
 		return
 
 	// Unsubscribe
 	case nocommand:
-
 		UserNotifications[ChatId] = false
-		b.SendMessage("Notificaions OFF!", ChatId, nil)
-		WriteToJson(ChatId, false)
+		b.SendMessage("Notificaions OFF", ChatId, nil)
+		b.WriteToJson(ChatId, false)
 		return
 
 		// case getMainMenu:
