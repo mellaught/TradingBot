@@ -19,7 +19,7 @@ const (
 	settingsMenu   = "settings"
 	yesNotify      = "yes"
 	noNotify       = "no"
-	OffBot         = "stop"
+	offBot         = "stop"
 )
 
 // Get main menu keyboard
