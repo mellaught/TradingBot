@@ -46,7 +46,7 @@ type Bot struct {
 	Token   string
 	Bot     *tgbotapi.BotAPI
 	Dlg     map[int64]*Dialog
-	Members *models.Members
+	Members map[int64]bool
 	pass    string
 }
 
@@ -56,7 +56,7 @@ func InitBot(config *models.BotConfig, members *models.Members) *Bot {
 	b := Bot{
 		Token:   config.Token,
 		Dlg:     map[int64]*Dialog{},
-		Members: &models.Members{},
+		Members: map[int64]bool{},
 		pass:    config.Password,
 	}
 
@@ -67,7 +67,9 @@ func InitBot(config *models.BotConfig, members *models.Members) *Bot {
 	}
 
 	b.Bot = bot
-	b.Members = members
+	for _, m := range members.M {
+		b.Members[m.ChatId] = m.Notification
+	}
 
 	return &b
 }
@@ -93,6 +95,11 @@ func (b *Bot) Run() {
 		}
 
 		b.Dlg[dialog.ChatId] = dialog
+		if ok, _ := b.Members[dialog.ChatId]; !ok {
+			UserHistory[dialog.ChatId] = "start"
+			b.SendMessage(notAuto, dialog.ChatId, nil)
+			continue
+		}
 
 		if botCommand := b.getCommand(update); botCommand != "" {
 			b.RunCommand(botCommand, dialog.ChatId)
@@ -172,13 +179,13 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 		kb, txt := b.GetMenuMessage(ChatId)
 		b.SendMessage(txt, ChatId, kb)
 		return
-	
+
 	// Get Trading choose kb.
 	case tradingCommand:
-		kb :=b.YesNoTradingKb()
+		kb := b.YesNoTradingKb()
 		b.EditAndSend(&kb, notifyMessage, ChatId)
 		return
-	
+
 	// Get Notify choose kb.
 	case notifyCommand:
 		kb := b.YesNoNotifyKb()

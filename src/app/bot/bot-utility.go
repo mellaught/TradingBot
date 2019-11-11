@@ -63,11 +63,13 @@ func (b Bot) SendMessage(txt string, ChatId int64, kb interface{}) {
 // Write user's chosen to members.json(gitingore).
 func (b *Bot) WriteToJson(ChatId int64, flag bool) {
 	data := &models.Members{}
-	for i, m := range b.Members.M {
+	var i = 0
+	for k, v := range b.Members {
 		data.M[i] = &models.User{
-			ChatId:       m.ChatId,
-			Notification: m.Notification,
+			ChatId:       k,
+			Notification: v,
 		}
+		i++
 	}
 
 	file, _ := json.Marshal(data)

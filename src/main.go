@@ -34,7 +34,7 @@ func main() {
 	members := &models.Members{}
 	jsonFile, err := os.Open("members.json")
 	if err != nil {
-		if err.Error() == "open app/arbitrator/html/default.json: The system cannot find the file specified." {
+		if err.Error() == "open members.json: The system cannot find the file specified." {
 			log.Println("First use")
 
 		} else {
