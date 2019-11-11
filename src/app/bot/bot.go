@@ -115,12 +115,12 @@ func (b *Bot) Run() {
 func (b *Bot) TextMessageHandler(text string, ChatId int64) {
 	if strings.Contains(UserHistory[ChatId], "start") {
 		if text != b.pass {
-			b.SendMessage("Error password:(\nTry again, my friend!", ChatId, nil)
+			b.SendMessage(errPassMessage, ChatId, nil)
 			return
 		} else {
 			kb := b.MainKb()
 			UserHistory[ChatId] = ""
-			b.SendMessage("Welcome to Trading Bot", ChatId, kb)
+			b.SendMessage(welcomeMessage, ChatId, kb)
 			return
 		}
 	}
@@ -195,14 +195,14 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 	// Subsctibe notifications
 	case yesNotify:
 		UserNotifications[ChatId] = true
-		b.SendMessage("Notificaions ON", ChatId, nil)
+		b.SendMessage("Notificaions **ON**", ChatId, nil)
 		b.WriteToJson(ChatId, true)
 		return
 
 	// Unsubscribe notifications
 	case noNotify:
 		UserNotifications[ChatId] = false
-		b.SendMessage("Notificaions OFF", ChatId, nil)
+		b.SendMessage("Notificaions **OFF**", ChatId, nil)
 		b.WriteToJson(ChatId, false)
 		return
 
