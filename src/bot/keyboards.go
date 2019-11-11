@@ -4,12 +4,21 @@ import (
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 )
 
-// YesNoKB: ON or OFF Notifications/BOT.
-func (b *Bot) YesNoKb() tgbotapi.InlineKeyboardMarkup {
+// YesNoNotifyKb: ON or OFF Notifications/BOT.
+func (b *Bot) YesNoNotifyKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("ON✔️", yescommand),
-			tgbotapi.NewInlineKeyboardButtonData("OFF❌", nocommand),
+			tgbotapi.NewInlineKeyboardButtonData("ON✔️", yesNotify),
+			tgbotapi.NewInlineKeyboardButtonData("OFF❌", noNotify),
+		),
+	)
+}
+
+// YesNoTradingKb: ON or OFF Notifications/BOT.
+func (b *Bot) YesNoTradingKb() tgbotapi.InlineKeyboardMarkup {
+	return tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("OFF❌", OffBot),
 		),
 	)
 }

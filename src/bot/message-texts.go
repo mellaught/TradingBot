@@ -1,5 +1,5 @@
 package bot
 
 var (
-	MainMenu string = ""
+	mainMenu string = ""
 )

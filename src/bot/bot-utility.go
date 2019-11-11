@@ -16,8 +16,9 @@ const (
 	tradingCommand = "trading"
 	notifyCommand  = "notify"
 	settingsMenu   = "settings"
-	yescommand     = "yes"
-	nocommand      = "not"
+	yesNotify      = "yes"
+	noNotify       = "no"
+	OffBot         = "stop"
 )
 
 func (b *Bot) EditAndSend(kb *tgbotapi.InlineKeyboardMarkup, txt string, ChatId int64) {
