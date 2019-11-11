@@ -84,7 +84,6 @@ func (b *Bot) Run() {
 	//Get updates from bot
 	updates, _ := b.Bot.GetUpdatesChan(u)
 	for update := range updates {
-
 		if update.Message == nil && update.CallbackQuery == nil {
 			continue
 		}
@@ -95,6 +94,7 @@ func (b *Bot) Run() {
 		}
 
 		b.Dlg[dialog.ChatId] = dialog
+		// Check ChatId in b.Members.
 		if ok, _ := b.Members[dialog.ChatId]; !ok {
 			UserHistory[dialog.ChatId] = "start"
 			b.SendMessage(notAuto, dialog.ChatId, nil)

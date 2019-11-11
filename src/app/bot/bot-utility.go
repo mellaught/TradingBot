@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
@@ -58,6 +59,20 @@ func (b Bot) SendMessage(txt string, ChatId int64, kb interface{}) {
 	msg.DisableWebPagePreview = true
 	b.Bot.Send(msg)
 	b.Dlg[ChatId].MessageId++
+}
+
+// Send Message from tgbotapi with markdown style and current kb.
+func (b Bot) SendNotifyMessage(txt string, ChatId int64, kb interface{}) {
+	if ok, n := b.Members[ChatId]; !ok {
+		log.Println("Haven't got this user!")
+	} else if n {
+		msg := tgbotapi.NewMessage(b.Dlg[ChatId].ChatId, txt)
+		msg.ParseMode = "markdown"
+		msg.ReplyMarkup = kb
+		msg.DisableWebPagePreview = true
+		b.Bot.Send(msg)
+		b.Dlg[ChatId].MessageId++
+	}
 }
 
 // Write user's chosen to members.json(gitingore).
