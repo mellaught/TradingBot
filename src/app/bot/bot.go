@@ -195,14 +195,14 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 	// Subsctibe notifications
 	case yesNotify:
 		UserNotifications[ChatId] = true
-		b.SendMessage("Notificaions **ON**", ChatId, nil)
+		b.SendMessage("Notifications **ON**", ChatId, nil)
 		b.WriteToJson(ChatId, true)
 		return
 
 	// Unsubscribe notifications
 	case noNotify:
 		UserNotifications[ChatId] = false
-		b.SendMessage("Notificaions **OFF**", ChatId, nil)
+		b.SendMessage("Notifications **OFF**", ChatId, nil)
 		b.WriteToJson(ChatId, false)
 		return
 
