@@ -18,8 +18,8 @@ func (b *Bot) YesNoKb() tgbotapi.InlineKeyboardMarkup {
 func (b *Bot) MainKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Notifications", notifyCommand),
-			tgbotapi.NewInlineKeyboardButtonData("Trading", tradingCommand),
+			tgbotapi.NewInlineKeyboardButtonData("Notifications🔔", notifyCommand),
+			tgbotapi.NewInlineKeyboardButtonData("Trading📊", tradingCommand),
 		),
 	)
 }
