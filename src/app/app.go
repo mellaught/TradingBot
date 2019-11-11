@@ -17,11 +17,14 @@ func NewApp(conf *models.Config, members *models.Members) *App {
 		Bot: &bot.Bot{},
 	}
 
-	// Start Bot.
+	// Init Bot.
 	a.Bot = bot.InitBot(conf.Bot, members)
+
+	return &a
+}
+
+func (a *App) Run() {
 	go a.Bot.Run()
 	// Start Binance Exchange.
 	//go a.Exchanges.Binance.Run()
-
-	return &a
 }

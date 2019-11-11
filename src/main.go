@@ -2,8 +2,8 @@ package main
 
 import (
 	"TradingBot/src/app"
-	"TradingBot/src/config"
 	"TradingBot/src/models"
+	"Tradingbot/src/config"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -16,22 +16,23 @@ func main() {
 
 	// Create viper struct.
 	conf := &models.Config{
-		BotToken: &models.BotConfig{},
-		Binance:  &models.ApiData{},
-		Bitforex: &models.ApiData{},
-		Bittrex:  &models.ApiData{},
-		Yobit:    &models.ApiData{},
+		Bot:      &models.BotConfig{},
+		Binance:  &models.ExchangeConfig{},
+		Bitforex: &models.ExchangeConfig{},
+		Bittrex:  &models.ExchangeConfig{},
+		Yobit:    &models.ExchangeConfig{},
 	}
 
 	// Read config.json -> viper
 	conf.Bot.Token = cfg.GetString("bot.token")
 	conf.Bot.Password = cfg.GetString("bot.password")
-	conf.Bot.MaxMembers = cfg.GetString("bot.Nmembers")
+	conf.Bot.NaxMembers = cfg.GetInt("bot.Nmembers")
 	conf.Binance.ApiKey = cfg.GetString("binance.ApiKey")
 	conf.Binance.ApiSecret = cfg.GetString("binance.ApiSecret")
 
 	// Read file with bot's members.
-	jsonFile, err := os.Open("app/arbitrator/html/default.json")
+	members := &models.Members{}
+	jsonFile, err := os.Open("members.json")
 	if err != nil {
 		if err.Error() == "open app/arbitrator/html/default.json: The system cannot find the file specified." {
 			log.Println("First use")
@@ -42,7 +43,7 @@ func main() {
 	} else {
 		defer jsonFile.Close()
 		byteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(byteValue, &data)
+		json.Unmarshal(byteValue, &members)
 	}
 
 	app := app.NewApp(conf, members)
