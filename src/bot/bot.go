@@ -173,6 +173,12 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 		b.SendMessage(txt, ChatId, kb)
 		return
 	
+	// Get Trading choose kb.
+	case tradingCommand:
+		kb :=b.YesNoTradingKb()
+		b.EditAndSend(&kb, notifyMessage, ChatId)
+		return
+	
 	// Get Notify choose kb.
 	case notifyCommand:
 		kb := b.YesNoNotifyKb()
