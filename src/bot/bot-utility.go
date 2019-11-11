@@ -11,11 +11,13 @@ import (
 )
 
 const (
-	startCommand = "start"
-	getMainMenu  = "home"
-	settingsMenu = "settings"
-	yescommand   = "yes"
-	nocommand    = "not"
+	startCommand   = "start"
+	getMainMenu    = "home"
+	tradingCommand = "trading"
+	notifyCommand  = "notify"
+	settingsMenu   = "settings"
+	yescommand     = "yes"
+	nocommand      = "not"
 )
 
 func (b *Bot) EditAndSend(kb *tgbotapi.InlineKeyboardMarkup, txt string, ChatId int64) {
