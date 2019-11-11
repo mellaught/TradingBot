@@ -21,7 +21,7 @@ const (
 	OffBot         = "stop"
 )
 
-//
+// Get main menu keyboard
 func (b *Bot) GetMenuMessage(ChatId int64) (tgbotapi.InlineKeyboardMarkup, string) {
 	UserHistory[ChatId] = ""
 	kb := b.MainKb()
@@ -29,6 +29,7 @@ func (b *Bot) GetMenuMessage(ChatId int64) (tgbotapi.InlineKeyboardMarkup, strin
 	return kb, txt
 }
 
+// Edit last message and send with current new txt and kb.
 func (b *Bot) EditAndSend(kb *tgbotapi.InlineKeyboardMarkup, txt string, ChatId int64) {
 	msg := tgbotapi.EditMessageTextConfig{
 		BaseEdit: tgbotapi.BaseEdit{
@@ -43,11 +44,13 @@ func (b *Bot) EditAndSend(kb *tgbotapi.InlineKeyboardMarkup, txt string, ChatId 
 	b.Bot.Send(msg)
 }
 
+// Print error in console and send Error text.
 func (b *Bot) PrintAndSendError(err error, ChatId int64) {
 	fmt.Println(err)
-	b.SendMessage("Error", ChatId, nil)
+	b.SendMessage(err.Error(), ChatId, nil)
 }
 
+// Send Message from tgbotapi with markdown style and current kb.
 func (b Bot) SendMessage(txt string, ChatId int64, kb interface{}) {
 	msg := tgbotapi.NewMessage(b.Dlg[ChatId].ChatId, txt)
 	msg.ParseMode = "markdown"
