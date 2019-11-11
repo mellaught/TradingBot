@@ -26,7 +26,6 @@ func main() {
 	// Read config.json -> viper
 	conf.Bot.Token = cfg.GetString("bot.token")
 	conf.Bot.Password = cfg.GetString("bot.password")
-	conf.Bot.NaxMembers = cfg.GetInt("bot.Nmembers")
 	conf.Binance.ApiKey = cfg.GetString("binance.ApiKey")
 	conf.Binance.ApiSecret = cfg.GetString("binance.ApiSecret")
 

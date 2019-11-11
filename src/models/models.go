@@ -22,9 +22,6 @@ type BotConfig struct {
 	Token string
 	// Password for author to start use bot.
 	Password string
-	// Max Members for bot.
-	// If current number of users == NaxMembers the bot willn't continue the dialog.
-	NaxMembers int
 }
 
 // Struct for members.json
