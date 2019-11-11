@@ -1,3 +1,4 @@
-config.json
-members.json
+src/config.json
+src/members.json
 src/main-test.go
+src/app/strategy
