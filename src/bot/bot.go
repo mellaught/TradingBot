@@ -172,6 +172,12 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 		kb, txt := b.GetMenuMessage(ChatId)
 		b.SendMessage(txt, ChatId, kb)
 		return
+	
+	// Get Notify choose kb.
+	case notifyCommand:
+		kb := b.YesNoNotifyKb()
+		b.EditAndSend(&kb, notifyMessage, ChatId)
+		return
 
 	// Subsctibe notifications
 	case yesNotify:
