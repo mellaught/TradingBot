@@ -207,7 +207,7 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 		return
 
 	// StopBot
-	case OffBot:
+	case offBot:
 		b.Bot.StopReceivingUpdates()
 	}
 }

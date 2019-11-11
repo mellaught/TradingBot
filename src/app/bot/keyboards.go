@@ -18,7 +18,7 @@ func (b *Bot) YesNoNotifyKb() tgbotapi.InlineKeyboardMarkup {
 func (b *Bot) YesNoTradingKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("OFF❌", OffBot),
+			tgbotapi.NewInlineKeyboardButtonData("OFF❌", offBot),
 		),
 	)
 }
