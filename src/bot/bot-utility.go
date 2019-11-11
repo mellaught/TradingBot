@@ -21,6 +21,14 @@ const (
 	OffBot         = "stop"
 )
 
+//
+func (b *Bot) GetMenuMessage(ChatId int64) (tgbotapi.InlineKeyboardMarkup, string) {
+	UserHistory[ChatId] = ""
+	kb := b.MainKb()
+	txt := fmt.Sprintf(menuMessage, 123.1, 0.01)
+	return kb, txt
+}
+
 func (b *Bot) EditAndSend(kb *tgbotapi.InlineKeyboardMarkup, txt string, ChatId int64) {
 	msg := tgbotapi.EditMessageTextConfig{
 		BaseEdit: tgbotapi.BaseEdit{

@@ -111,7 +111,7 @@ func (b *Bot) TextMessageHandler(text string, ChatId int64) {
 			b.SendMessage("Error password:(\nTry again, my friend!", ChatId, nil)
 			return
 		} else {
-			kb := b.NotificationsKb()
+			kb := b.MainKb()
 			UserHistory[ChatId] = ""
 			b.SendMessage("Welcome to Trading Bot", ChatId, kb)
 			return
@@ -164,32 +164,31 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 	// "/Start" interacting with the bot, bot description and available commands.
 	case startCommand:
 		UserHistory[ChatId] = "start"
-		b.SendMessage("Hello!\n\nEnter pls password...", ChatId, nil)
+		b.SendMessage(startMessage, ChatId, nil)
 		return
 
-	// Subsctibe
-	case yescommand:
+	// Get Main Menu Keyboard.
+	case getMainMenu:
+		kb, txt := b.GetMenuMessage(ChatId)
+		b.SendMessage(txt, ChatId, kb)
+		return
+
+	// Subsctibe notifications
+	case yesNotify:
 		UserNotifications[ChatId] = true
 		b.SendMessage("Notificaions ON", ChatId, nil)
 		b.WriteToJson(ChatId, true)
 		return
 
-	// Unsubscribe
-	case nocommand:
+	// Unsubscribe notifications
+	case noNotify:
 		UserNotifications[ChatId] = false
 		b.SendMessage("Notificaions OFF", ChatId, nil)
 		b.WriteToJson(ChatId, false)
 		return
 
-		// case getMainMenu:
-		// 	kb, txt, err := b.SendMenuMessage(ChatId)
-		// 	if err != nil {
-		// 		b.PrintAndSendError(err, ChatId)
-		// 		return
-		// 	}
-
-		// 	b.SendMessage(txt, ChatId, kb)
-		// 	return
-		// }
+	// StopBot
+	case OffBot:
+		b.Bot.StopReceivingUpdates()
 	}
 }
