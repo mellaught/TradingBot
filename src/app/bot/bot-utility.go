@@ -77,13 +77,13 @@ func (b Bot) SendNotifyMessage(txt string, ChatId int64, kb interface{}) {
 
 // Write user's chosen to members.json(gitingore).
 func (b *Bot) WriteToJson(ChatId int64, flag bool) {
-	data := &models.Members{}
+	data := models.Members{}
 	var i = 0
 	for k, v := range b.Members {
-		data.M[i] = &models.User{
+		data.M = append(data.M, &models.User{
 			ChatId:       k,
 			Notification: v,
-		}
+		})
 		i++
 	}
 
