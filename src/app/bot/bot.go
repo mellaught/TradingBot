@@ -94,12 +94,6 @@ func (b *Bot) Run() {
 		}
 
 		b.Dlg[dialog.ChatId] = dialog
-		// Check ChatId in b.Members.
-		if ok, _ := b.Members[dialog.ChatId]; !ok {
-			UserHistory[dialog.ChatId] = "start"
-			b.SendMessage(notAuto, dialog.ChatId, nil)
-			continue
-		}
 
 		if botCommand := b.getCommand(update); botCommand != "" {
 			b.RunCommand(botCommand, dialog.ChatId)
@@ -118,9 +112,11 @@ func (b *Bot) TextMessageHandler(text string, ChatId int64) {
 			b.SendMessage(errPassMessage, ChatId, nil)
 			return
 		} else {
+			b.Members[ChatId] = true
 			kb := b.MainKb()
 			UserHistory[ChatId] = ""
 			b.SendMessage(welcomeMessage, ChatId, kb)
+			b.WriteToJson(ChatId, true)
 			return
 		}
 	}
@@ -167,13 +163,21 @@ func (b *Bot) getCommand(update tgbotapi.Update) string {
 // RunCommand executes the input command.
 func (b *Bot) RunCommand(command string, ChatId int64) {
 	commands[ChatId] = command
-	switch command {
-	// "/Start" interacting with the bot, bot description and available commands.
-	case startCommand:
+	// Check ChatId in b.Members.
+	if command == startCommand {
+		// "/Start" interacting with the bot, bot description and available commands.
 		UserHistory[ChatId] = "start"
 		b.SendMessage(startMessage, ChatId, nil)
 		return
+	}
 
+	if ok, _ := b.Members[ChatId]; !ok {
+		UserHistory[ChatId] = "start"
+		b.SendMessage(notAuto, ChatId, nil)
+		return
+	}
+
+	switch command {
 	// Get Main Menu Keyboard.
 	case getMainMenu:
 		kb, txt := b.GetMenuMessage(ChatId)

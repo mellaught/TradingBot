@@ -5,7 +5,7 @@ var (
 	welcomeMessage = "Welcome to **Tranding Bot** by D. Gorokhov."
 	notAuto        = "Your not autorisation!\n\nPlease enter password..."
 	errPassMessage = "Error password:(\nTry again, my friend!"
-	menuMessage    = "Balance:\n\n1.USDT: **%.2f**\n2.Bitcoin: **%.2f**"
+	menuMessage    = "Balance:\n\n1.USDT: **%.4f**\n2.Bitcoin: **%.4f**"
 	notifyMessage  = "**ON** or **OFF** Notifications from Trading BOT."
-	OFFMessage     = "Attention❗❗❗\n\nIF you stop the bot, will restart all APP."
+	OFFMessage     = "Attention ❗❗❗\n\nIF you stop the bot, will restart all APP."
 )

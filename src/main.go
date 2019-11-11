@@ -5,6 +5,7 @@ import (
 	"TradingBot/src/models"
 	"Tradingbot/src/config"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -34,8 +35,7 @@ func main() {
 	jsonFile, err := os.Open("members.json")
 	if err != nil {
 		if err.Error() == "open members.json: The system cannot find the file specified." {
-			log.Println("First use")
-
+			log.Println("First use!")
 		} else {
 			log.Fatal(err)
 		}
@@ -45,8 +45,10 @@ func main() {
 		json.Unmarshal(byteValue, &members)
 	}
 
+	fmt.Println(members)
 	app := app.NewApp(conf, members)
 	// Start App
 	app.Run()
 	log.Println("App started!")
+	//time.Sleep(15 * time.Minute)
 }

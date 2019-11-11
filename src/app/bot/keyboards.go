@@ -8,8 +8,8 @@ import (
 func (b *Bot) YesNoNotifyKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("ON✔️", yesNotify),
-			tgbotapi.NewInlineKeyboardButtonData("OFF❌", noNotify),
+			tgbotapi.NewInlineKeyboardButtonData("ON ✔️", yesNotify),
+			tgbotapi.NewInlineKeyboardButtonData("OFF ❌", noNotify),
 		),
 	)
 }
@@ -18,7 +18,7 @@ func (b *Bot) YesNoNotifyKb() tgbotapi.InlineKeyboardMarkup {
 func (b *Bot) YesNoTradingKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("OFF❌", offBot),
+			tgbotapi.NewInlineKeyboardButtonData("OFF ❌", offBot),
 		),
 	)
 }
@@ -27,8 +27,8 @@ func (b *Bot) YesNoTradingKb() tgbotapi.InlineKeyboardMarkup {
 func (b *Bot) MainKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Notifications🔔", notifyCommand),
-			tgbotapi.NewInlineKeyboardButtonData("Trading📊", tradingCommand),
+			tgbotapi.NewInlineKeyboardButtonData("Notifications 🔔", notifyCommand),
+			tgbotapi.NewInlineKeyboardButtonData("Trading 📊", tradingCommand),
 		),
 	)
 }

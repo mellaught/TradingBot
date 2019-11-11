@@ -24,7 +24,7 @@ func NewApp(conf *models.Config, members *models.Members) *App {
 }
 
 func (a *App) Run() {
-	go a.Bot.Run()
+	a.Bot.Run()
 	// Start Binance Exchange.
 	//go a.Exchanges.Binance.Run()
 }
