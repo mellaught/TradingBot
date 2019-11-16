@@ -1,6 +1,7 @@
 package config
 
 import (
+	"TradingBot/src/models"
 	"fmt"
 	"strings"
 
@@ -11,6 +12,8 @@ type Config interface {
 	GetString(key string) string
 	GetInt(key string) int
 	GetBool(key string) bool
+	ReadExchanges(key string) *models.ExchangeConfig
+	ReadBot() *models.BotConfig
 	GetFloat64(key string) float64
 	Init()
 }

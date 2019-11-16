@@ -3,6 +3,7 @@ package models
 //Config ..
 type Config struct {
 	Binance  *ExchangeConfig
+	Poloniex *ExchangeConfig
 	Bitforex *ExchangeConfig
 	Yobit    *ExchangeConfig
 	Bittrex  *ExchangeConfig
@@ -14,6 +15,7 @@ type Config struct {
 type ExchangeConfig struct {
 	ApiKey    string
 	ApiSecret string
+	Timeout   string
 }
 
 // Bot config.
