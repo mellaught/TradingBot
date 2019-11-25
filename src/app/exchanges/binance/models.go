@@ -1,5 +1,13 @@
 package binance
 
+import (
+	"sync"
+	"time"
+
+	"github.com/adshao/go-binance"
+	"github.com/sirupsen/logrus"
+)
+
 var (
 	BinanceCandlestickIntervalList = []string{
 		"1m",
@@ -23,6 +31,21 @@ var (
 		"oneMin", "fiveMin", "thirtyMin", "hour", "day",
 	}
 )
+
+type BinanceWorker struct {
+	Cli               *binance.Client
+	log               *logrus.Logger
+	symbols           []string
+	requestInterval   time.Duration
+	AggTradesC        chan *binance.WsAggTradeEvent
+	TradesC           chan *binance.WsTradeEvent
+	AllMarketTickersC chan binance.WsAllMarketsStatEvent
+	KlinesC           chan *binance.WsKlineEvent
+	stops             []chan struct{}
+	dones             []chan struct{}
+	orderBookCacheMu  sync.Mutex
+	orderBookCache    map[string]OrderBookInternal
+}
 
 type OrderBookInternal struct {
 	LastUpdateID int64             `json:"-"`

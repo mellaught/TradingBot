@@ -2,3 +2,5 @@ src/config.json
 src/members.json
 src/main-test.go
 src/app/strategy
+src/app/exchanges/poloniex/test/config.json
+src/app/exchanges/binance/test/config.json

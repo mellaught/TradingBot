@@ -7,16 +7,18 @@ import (
 )
 
 //
-
-func (p *PoloniexWorker) GetPrice(symbol string) (*polo.Ticker, error) {
+func (p *PoloniexWorker) GetPrice(symbols ...string) ([]polo.Ticker, error) {
 
 	resp, err := p.PubCli.GetTickers()
 	if err != nil {
 		return nil, err
 	}
-	t := resp[symbol]
+	var t []polo.Ticker
+	for _, s := range symbols {
+		t = append(t, resp[s])
+	}
 
-	return &t, nil
+	return t, nil
 }
 
 // Returns the past 200 trades for a given market, or up to 1,000 trades between a range specified in UNIX timestamps by the "start" and "end" GET parameters.
