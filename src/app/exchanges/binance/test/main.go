@@ -5,6 +5,7 @@ import (
 	"TradingBot/src/config"
 	"TradingBot/src/models"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -29,7 +30,6 @@ func main() {
 	fmt.Println("App started")
 	b.Start()
 	//time.Sleep(2 * time.Second)
-	b.GetExchangeInfo()
-	//b.StrategyStart()
-	//time.Sleep(30 * time.Minute)
+	b.StrategyStart()
+	time.Sleep(30 * time.Minute)
 }

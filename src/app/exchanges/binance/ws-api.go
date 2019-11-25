@@ -8,6 +8,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Get Tickers from chan(for Exchange interface)
+func (b *BinanceWorker) GetTickersFromChan() binance.WsAllMarketsStatEvent {
+	return <-b.AllMarketTickersC
+}
+
 // -----------------------------------   SUBSCRIBE TICKERS   -----------------------------------
 //
 func (b *BinanceWorker) AllMarketTickers() error {

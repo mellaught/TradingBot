@@ -40,11 +40,13 @@ func CreateWorker(conf *models.ExchangeConfig) *BinanceWorker {
 		AllMarketTickersC: make(chan binance.WsAllMarketsStatEvent),
 		orderBookCache:    make(map[string]OrderBookInternal),
 	}
+
+
 }
 
 // Start a new Binance worker.
 func (b *BinanceWorker) Start() {
-
+	
 	// Start subscribe tickers
 	go b.AllMarketTickers()
 
