@@ -1,46 +1,39 @@
 package app
 
 import (
-	FloydWarshall "TradingBot/src/app/strategy/Floyd-Warshall"
+	"context"
 	"log"
 	"time"
 )
-
-var (
-	RunStrategy  chan ExchangeStrategy
-	StopStrategy chan ExchangeStrategy
-)
-
-// ExchangeStrategy struct for turn on or turn off strategy
-type ExchangeStrategy struct {
-	Name     string
-	Strategy string
-}
 
 // StrategyHandler run or stop strategy when user send callback from telegram bot
 func (a *App) StrategyHandler() {
 	for {
 		select {
-		case run := <-RunStrategy:
+		case run := <-a.Bot.RunStrategy:
+			err := a.StartStrategy(run.Ctx, run.Name, run.Strategy)
+			if err != nil {
+				log.Println(err)
+			}
 			log.Printf("Started %s strategy for %s Exchange", run.Name, run.Strategy)
 			time.Sleep(1 * time.Second)
 
-		case stop := <-StopStrategy:
+		case stop := <-a.Bot.StopStrategy:
 			log.Printf("Stoped %s strategy for %s Exchange", stop.Name, stop.Strategy)
 			time.Sleep(1 * time.Second)
 		}
 	}
 }
 
-func (a *App) StartStrategy(exchange string, strategy string) error {
+func (a *App) StartStrategy(ctx *context.Context, exchange, strategy string) error {
 
 	switch strategy {
 	case "FW":
 		switch exchange {
 		case "Binance":
-			FloydWarshall.Start()
+			a.FW.Start(ctx, a.Binance)
 		case "Poloniex":
-			
+
 		}
 	case "MM":
 		switch exchange {

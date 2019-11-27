@@ -22,6 +22,7 @@ func (b *BinanceWorker) GetTickersFromChan() *tickers.Tickers {
 			continue
 		}
 		base, quote := si.BaseAsset, si.QuoteAsset
+		fmt.Println(base, quote)
 		buyPrice, err := strconv.ParseFloat(ticker.BidPrice, 64)
 		if err != nil {
 			fmt.Printf("Error: %s in GetTickersFromChan in Binance Service", err.Error())
@@ -37,7 +38,7 @@ func (b *BinanceWorker) GetTickersFromChan() *tickers.Tickers {
 			continue
 		}
 
-		tiks.Add(base, quote, tickers.Ticker{BuyPrice: buyPrice, SellPrice: sellPrice})
+		//tiks.Add(base, quote, tickers.Ticker{BuyPrice: buyPrice, SellPrice: sellPrice})
 	}
 
 	return tiks
