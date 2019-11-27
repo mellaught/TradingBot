@@ -1,37 +1,16 @@
 package exchanges
 
-import "fmt"
-
-type tickerKey struct {
-	Base  string
-	Quote string
-}
-
-type Ticker struct {
-	BuyPrice  float64
-	SellPrice float64
-}
-
-type Tickers struct {
-	Currencies      []string
-	currencyToIndex map[string]int
-
-	tickers map[tickerKey]Ticker
-}
+import (
+	"TradingBot/src/app/tickers"
+)
 
 // Exchange -- interface for all exchanges
 type Exchange interface {
-	Start()
-	GetTickersFromChan() *Tickers
-	GetHistoryTrades()
+	GetTickersFromChan() *tickers.Tickers
+	GetName() string
 }
 
-// Create exchange and start it
-func Create(e *Exchange) {
-	fmt.Println(e)
-}
-
-func GetTickets(e Exchange) *Tickers {
+// Return tickers format models.
+func GetTickets(e Exchange) *tickers.Tickers {
 	return e.GetTickersFromChan()
 }
-

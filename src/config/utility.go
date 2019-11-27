@@ -2,7 +2,7 @@ package config
 
 import "TradingBot/src/models"
 
-func (v *viperConfig) ReadExchanges(exchange string) *models.ExchangeConfig {
+func (v *viperConfig) ReadExchange(exchange string) *models.ExchangeConfig {
 
 	return &models.ExchangeConfig{
 		ApiKey:    v.GetString(exchange + ".ApiKey"),

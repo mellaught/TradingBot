@@ -36,6 +36,7 @@ type BinanceWorker struct {
 	Cli               *binance.Client
 	log               *logrus.Logger
 	symbols           []string
+	SymbolInfo        map[string]*binance.Symbol
 	requestInterval   time.Duration
 	AggTradesC        chan *binance.WsAggTradeEvent
 	TradesC           chan *binance.WsTradeEvent

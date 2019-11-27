@@ -1,7 +1,10 @@
 package binance
 
 import (
+	"TradingBot/src/app/tickers"
 	"fmt"
+	"log"
+	"strconv"
 	"time"
 
 	"github.com/adshao/go-binance"
@@ -9,8 +12,35 @@ import (
 )
 
 // Get Tickers from chan(for Exchange interface)
-func (b *BinanceWorker) GetTickersFromChan() binance.WsAllMarketsStatEvent {
-	return <-b.AllMarketTickersC
+func (b *BinanceWorker) GetTickersFromChan() *tickers.Tickers {
+	WsTickers := <-b.AllMarketTickersC
+	tiks := tickers.NewTickers()
+	for _, ticker := range WsTickers {
+		si, ok := b.SymbolInfo[ticker.Symbol]
+		if !ok {
+			log.Printf("warn, Binance - symbol %s missed in exchange info, skipped", ticker.Symbol)
+			continue
+		}
+		base, quote := si.BaseAsset, si.QuoteAsset
+		buyPrice, err := strconv.ParseFloat(ticker.BidPrice, 64)
+		if err != nil {
+			fmt.Printf("Error: %s in GetTickersFromChan in Binance Service", err.Error())
+			return nil
+		}
+		sellPrice, err := strconv.ParseFloat(ticker.AskPrice, 64)
+		if err != nil {
+			fmt.Printf("Error: %s in GetTickersFromChan in Binance Service", err.Error())
+			return nil
+		}
+
+		if buyPrice < 1e-6 || sellPrice < 1e-6 {
+			continue
+		}
+
+		tiks.Add(base, quote, tickers.Ticker{BuyPrice: buyPrice, SellPrice: sellPrice})
+	}
+
+	return tiks
 }
 
 // -----------------------------------   SUBSCRIBE TICKERS   -----------------------------------

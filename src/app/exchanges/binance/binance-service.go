@@ -21,8 +21,13 @@ const (
 )
 
 // Returns Binance operation comission
-func GetBinanceComission() float64 {
+func (b *BinanceWorker) GetBinanceComission() float64 {
 	return comission
+}
+
+// Returns Binance operation comission
+func (b *BinanceWorker) GetName() string {
+	return "Binance"
 }
 
 // Create Binance worker: ApiKey, ApiSecret and other params from conf
@@ -37,16 +42,16 @@ func CreateWorker(conf *models.ExchangeConfig) *BinanceWorker {
 		Cli:               binance.NewClient(conf.ApiKey, conf.ApiSecret),
 		requestInterval:   requestInterval,
 		AggTradesC:        make(chan *binance.WsAggTradeEvent),
+		SymbolInfo:        make(map[string]*binance.Symbol),
 		AllMarketTickersC: make(chan binance.WsAllMarketsStatEvent),
 		orderBookCache:    make(map[string]OrderBookInternal),
 	}
-
 
 }
 
 // Start a new Binance worker.
 func (b *BinanceWorker) Start() {
-	
+
 	// Start subscribe tickers
 	go b.AllMarketTickers()
 
@@ -70,5 +75,3 @@ func (b *BinanceWorker) Start() {
 // 		// }
 // 	}
 // }
-
-

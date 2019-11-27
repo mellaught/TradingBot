@@ -1,7 +1,7 @@
 package models
 
 //Config ..
-type Config struct {
+type ConfigFile struct {
 	Binance  *ExchangeConfig
 	Poloniex *ExchangeConfig
 	Bitforex *ExchangeConfig
