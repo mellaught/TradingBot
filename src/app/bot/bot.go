@@ -15,12 +15,14 @@ import (
 func InitBot(config *models.BotConfig, members *models.Members) *Bot {
 
 	b := Bot{
-		Token:        config.Token,
-		Dlg:          map[int64]*Dialog{},
-		Members:      map[int64]bool{},
-		RunStrategy:  make(chan ExchangeStrategy),
-		StopStrategy: make(chan ExchangeStrategy),
-		pass:         config.Password,
+		Token:           config.Token,
+		Dlg:             map[int64]*Dialog{},
+		UserStrategy:    map[int64]string{},
+		Members:         map[int64]bool{},
+		MembersStrategy: make(map[int64]map[string]*Strategy),
+		RunStrategy:     make(chan ExchangeStrategy),
+		StopStrategy:    make(chan ExchangeStrategy),
+		pass:            config.Password,
 	}
 
 	// Create new bot
@@ -160,8 +162,25 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 
 	// Get Trading choose kb
 	case tradingCommand:
+		UserHistory[ChatId] = "strategies"
 		kb := b.StrategiesKb()
 		b.EditAndSend(&kb, strategiesMessage, ChatId)
+		return
+
+	// Turn ON current strategy
+	case yesStrategy:
+		b.StrategyHandler(b.UserStrategy[ChatId], b.Dlg[ChatId].Text, true, ChatId)
+		txt := fmt.Sprintf("Strategy %s *ON*", b.Dlg[ChatId].Text)
+		b.EditAndSend(nil, txt, ChatId)
+		b.WriteToJson(ChatId, true)
+		return
+
+	// Turn OFF current strategy
+	case noStrategy:
+		b.StrategyHandler(b.UserStrategy[ChatId], b.Dlg[ChatId].Text, false, ChatId)
+		txt := fmt.Sprintf("Strategy %s *OFF*", b.Dlg[ChatId].Text)
+		b.EditAndSend(nil, txt, ChatId)
+		b.WriteToJson(ChatId, false)
 		return
 
 	// Floyd Warshall command
@@ -189,22 +208,6 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 	case noNotify:
 		UserNotifications[ChatId] = false
 		b.EditAndSend(nil, "Notifications *OFF*", ChatId)
-		b.WriteToJson(ChatId, false)
-		return
-
-	// Turn ON current strategy
-	case yesStrategy:
-		UserNotifications[ChatId] = true
-		txt := fmt.Sprintf("Strategy %s *ON*", b.Dlg[ChatId].Text)
-		b.EditAndSend(nil, txt, ChatId)
-		b.WriteToJson(ChatId, true)
-		return
-
-	// Turn OFF current strategy
-	case noStrategy:
-		UserNotifications[ChatId] = false
-		txt := fmt.Sprintf("Strategy %s *OFF*", b.Dlg[ChatId].Text)
-		b.EditAndSend(nil, txt, ChatId)
 		b.WriteToJson(ChatId, false)
 		return
 

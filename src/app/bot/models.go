@@ -20,15 +20,15 @@ type Dialog struct {
 	Command    string
 }
 
-// Bot is struct for Bot:   - Token: secret token from .env
+// Bot is struct for Bot:   - Token: secret token from config.json
 //							- Api:   Struct App for Rest Api methods
-//							- DB:    Postgres DB fro users and user's loots.
 //							- Bot:	 tgbotapi Bot(token)
 //							- Dlg:   For dialog struct
 type Bot struct {
 	Token           string
 	Bot             *tgbotapi.BotAPI
 	Dlg             map[int64]*Dialog
+	UserStrategy    map[int64]string
 	Members         map[int64]bool
 	MembersStrategy map[int64]map[string]*Strategy
 	RunStrategy     chan ExchangeStrategy
@@ -36,10 +36,12 @@ type Bot struct {
 	pass            string
 }
 
-// Strategy struct for turn on or turn off strategy
+// Strategy struct for turn on or turn off strategy:    - Strategy: strategy name
+// 														- Ctx: context for worker
 type Strategy struct {
 	Strategy string
 	Ctx      *context.Context
+	Cancel   *context.CancelFunc
 }
 
 // ExchangeStrategy struct for turn on or turn off strategy

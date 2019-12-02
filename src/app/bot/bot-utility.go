@@ -2,6 +2,7 @@ package bot
 
 import (
 	"TradingBot/src/models"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -44,6 +45,7 @@ func (b *Bot) CancelHandler(ChatId int64) {
 			b.EditAndSend(&kb, txt, ChatId)
 			return
 		}
+
 		// Strategies
 	} else if strings.Contains(UserHistory[ChatId], "strategies") {
 		fmt.Println(UserHistory[ChatId])
@@ -51,6 +53,41 @@ func (b *Bot) CancelHandler(ChatId int64) {
 		b.EditAndSend(&kb, txt, ChatId)
 		return
 	}
+}
+
+// Strategy handler: turn on or off strategy
+func (b *Bot) StrategyHandler(exchange, strategy string, on bool, ChatId int64) {
+	// Turn ON strategy for User
+	if on {
+		if e, ok := b.MembersStrategy[ChatId]; ok {
+			if s, ok := e[exchange]; ok {
+				fmt.Println(s)
+				log.Printf("Strategy %s on %s exchang for User %d is already ON", strategy, exchange, ChatId)
+				return
+			}
+		} else {
+			ctx, cancel := context.WithCancel(context.Background())
+			b.MembersStrategy[ChatId][exchange] = &Strategy{
+				Strategy: strategy,
+				Ctx:      &ctx,
+				Cancel:   &cancel,
+			}
+		}
+		// Turn OFF strategy for User
+	} else {
+		if e, ok := b.MembersStrategy[ChatId]; ok {
+			if s, ok := e[exchange]; ok {
+				fmt.Println(s)
+			} else {
+				log.Printf("Strategy %s on %s exchang for User %d doesn't ON", strategy, exchange, ChatId)
+				return
+			}
+		} else {
+			log.Printf("Strategy %s on %s exchang for User %d doesn't ON", strategy, exchange, ChatId)
+			return
+		}
+	}
+
 }
 
 // Get main menu keyboard
