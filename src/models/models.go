@@ -2,13 +2,7 @@ package models
 
 //Config ..
 type ConfigFile struct {
-	Binance  *ExchangeConfig
-	Poloniex *ExchangeConfig
-	Bitforex *ExchangeConfig
-	Yobit    *ExchangeConfig
-	Bittrex  *ExchangeConfig
-	LiveCoin *ExchangeConfig
-	Bot      *BotConfig
+	Bot *BotConfig
 }
 
 // ExchangeConfig holds Api Key and Api Secret for private exchanges Api.

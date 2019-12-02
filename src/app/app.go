@@ -5,6 +5,7 @@ import (
 	"TradingBot/src/app/exchanges/poloniex"
 	FloydWarshall "TradingBot/src/app/strategy/Floyd-Warshall"
 	"TradingBot/src/models"
+	"fmt"
 	"log"
 	"tradingBot/src/app/bot"
 )
@@ -15,11 +16,11 @@ type App struct {
 	Binance   *binance.BinanceWorker
 	Poloniex  *poloniex.PoloniexWorker
 	FW        *FloydWarshall.FloydWll
-	Exchanges map[string]bool
+	Exchanges map[string]*models.ExchangeConfig
 }
 
 // InitService is initializes the app.
-func NewApp(conf *models.ConfigFile, members *models.Members, exchanges map[string]bool) *App {
+func NewApp(conf *models.ConfigFile, members *models.Members, exchanges map[string]*models.ExchangeConfig) *App {
 
 	a := App{
 		Bot:       &bot.Bot{},
@@ -34,19 +35,19 @@ func NewApp(conf *models.ConfigFile, members *models.Members, exchanges map[stri
 
 	// Create all Exchanges
 	for k, v := range exchanges {
-		if v {
-			a.CreateExchange(conf.Binance, k)
-		}
+		a.CreateExchange(v, k)
 	}
 
 	// Create FloyWarhall Arbitrage Strategy
 	a.FW = FloydWarshall.CreateFloydWarshall()
+	log.Println("FloydWarshall created")
 
 	return &a
 }
 
 // Create current exchange by input name
 func (a *App) CreateExchange(conf *models.ExchangeConfig, exchange string) {
+
 	// Exchange's name
 	switch exchange {
 	case "Binance":
@@ -61,24 +62,31 @@ func (a *App) CreateExchange(conf *models.ExchangeConfig, exchange string) {
 }
 
 // Start current exchange by input name
-func (a *App) StartExchage(exchange string) error {
+func (a *App) StartExchage(exchange string) {
+	// Exchange's name
+	switch exchange {
+	case "Binance":
+		go a.Binance.Start()
+		log.Println("Binance started")
 
-	return nil
+	case "Poloniex":
+		go a.Poloniex.Start()
+		log.Println("Poloniex started")
+	}
+
 }
 
 // Run BOT and Exchanges
 func (a *App) Run() {
+	fmt.Println("In RUN()")
 	// Start Bot
-	a.Bot.Run()
+	go a.Bot.Run()
+	log.Println("Telegram bot started!")
 	// Start Strategy Handler
-	a.StrategyHandler()
+	go a.StrategyHandler()
+	log.Println("Strategy handler started!")
 	// Start all Exchanges
-	for k, v := range a.Exchanges {
-		if v {
-			err := a.StartExchage(k)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
+	for k, _ := range a.Exchanges {
+		a.StartExchage(k)
 	}
 }

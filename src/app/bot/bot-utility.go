@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 )
@@ -15,12 +16,42 @@ const (
 	startCommand   = "start"
 	getMainMenu    = "home"
 	tradingCommand = "trading"
+	tricommand     = "tri"
+	fwcommand      = "fw"
 	notifyCommand  = "notify"
 	settingsMenu   = "settings"
-	yesNotify      = "yes"
-	noNotify       = "no"
+	yesNotify      = "yesNotify"
+	noNotify       = "noNotify"
+	yesStrategy    = "yesStrategy"
+	noStrategy     = "noStrategy"
 	offBot         = "stop"
+	cancelComm     = "cancel"
 )
+
+// Cancel command handler: returns a previous step
+func (b *Bot) CancelHandler(ChatId int64) {
+	// Floy Warshall branch
+	if strings.Contains(UserHistory[ChatId], "FW") {
+		if UserHistory[ChatId][3:] == "0" {
+			UserHistory[ChatId] = "strategies"
+			kb := b.StrategiesKb()
+			b.EditAndSend(&kb, strategiesMessage, ChatId)
+			return
+		} else if UserHistory[ChatId][3:] == "1" || UserHistory[ChatId][3:] == "-1" {
+			UserHistory[ChatId] = "FW_0"
+			kb := b.YesNoStrategyKb()
+			txt := fmt.Sprintf(strategyPower, "Floyd Warshall")
+			b.EditAndSend(&kb, txt, ChatId)
+			return
+		}
+		// Strategies
+	} else if strings.Contains(UserHistory[ChatId], "strategies") {
+		fmt.Println(UserHistory[ChatId])
+		kb, txt := b.GetMenuMessage(ChatId)
+		b.EditAndSend(&kb, txt, ChatId)
+		return
+	}
+}
 
 // Get main menu keyboard
 func (b *Bot) GetMenuMessage(ChatId int64) (tgbotapi.InlineKeyboardMarkup, string) {

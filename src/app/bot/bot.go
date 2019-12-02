@@ -2,6 +2,7 @@ package bot
 
 import (
 	"TradingBot/src/models"
+	"fmt"
 	"log"
 	"strings"
 
@@ -95,6 +96,13 @@ func (b *Bot) assembleUpdate(update tgbotapi.Update) (*Dialog, bool) {
 		dialog.CallBackId = update.CallbackQuery.ID
 		dialog.ChatId = update.CallbackQuery.Message.Chat.ID
 		dialog.MessageId = update.CallbackQuery.Message.MessageID
+		if strings.Contains(update.CallbackQuery.Data, yesStrategy) {
+			dialog.Text = update.CallbackQuery.Data[11:]
+			update.CallbackQuery.Data = update.CallbackQuery.Data[:11]
+		} else if strings.Contains(update.CallbackQuery.Data, noStrategy) {
+			dialog.Text = update.CallbackQuery.Data[10:]
+			update.CallbackQuery.Data = update.CallbackQuery.Data[:10]
+		}
 	} else {
 		return dialog, false
 	}
@@ -140,19 +148,31 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 	}
 
 	switch command {
-	// Get Main Menu Keyboard.
+	// Get Main Menu Keyboard
 	case getMainMenu:
 		kb, txt := b.GetMenuMessage(ChatId)
 		b.SendMessage(txt, ChatId, kb)
 		return
 
-	// Get Trading choose kb.
+	// Cancel command return prev step for user
+	case cancelComm:
+		b.CancelHandler(ChatId)
+
+	// Get Trading choose kb
 	case tradingCommand:
-		kb := b.YesNoTradingKb()
-		b.EditAndSend(&kb, notifyMessage, ChatId)
+		kb := b.StrategiesKb()
+		b.EditAndSend(&kb, strategiesMessage, ChatId)
 		return
 
-	// Get Notify choose kb.
+	// Floyd Warshall command
+	case fwcommand:
+		UserHistory[ChatId] = "FW_0"
+		kb := b.YesNoNotifyKb()
+		txt := fmt.Sprintf(strategyPower, "Floyd Warshall")
+		b.EditAndSend(&kb, txt, ChatId)
+		return
+
+	// Get Notify choose kb
 	case notifyCommand:
 		kb := b.YesNoNotifyKb()
 		b.EditAndSend(&kb, notifyMessage, ChatId)
@@ -172,8 +192,24 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 		b.WriteToJson(ChatId, false)
 		return
 
+	// Turn ON current strategy
+	case yesStrategy:
+		UserNotifications[ChatId] = true
+		txt := fmt.Sprintf("Strategy %s *ON*", b.Dlg[ChatId].Text)
+		b.EditAndSend(nil, txt, ChatId)
+		b.WriteToJson(ChatId, true)
+		return
+
+	// Turn OFF current strategy
+	case noStrategy:
+		UserNotifications[ChatId] = false
+		txt := fmt.Sprintf("Strategy %s *OFF*", b.Dlg[ChatId].Text)
+		b.EditAndSend(nil, txt, ChatId)
+		b.WriteToJson(ChatId, false)
+		return
+
 	// StopBot
 	case offBot:
-		b.Bot.StopReceivingUpdates()
+		//b.Bot.StopReceivingUpdates()
 	}
 }
