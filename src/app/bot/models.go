@@ -30,7 +30,7 @@ type Bot struct {
 	Dlg             map[int64]*Dialog
 	UserStrategy    map[int64]string
 	Members         map[int64]bool
-	MembersStrategy map[int64]map[string]*Strategy
+	MembersStrategy map[int64]map[string]map[string]*Strategy
 	RunStrategy     chan ExchangeStrategy
 	StopStrategy    chan ExchangeStrategy
 	pass            string
@@ -39,14 +39,14 @@ type Bot struct {
 // Strategy struct for turn on or turn off strategy:    - Strategy: strategy name
 // 														- Ctx: context for worker
 type Strategy struct {
-	Strategy string
-	Ctx      *context.Context
-	Cancel   *context.CancelFunc
+	Ctx    *context.Context
+	Cancel context.CancelFunc
 }
 
 // ExchangeStrategy struct for turn on or turn off strategy
 type ExchangeStrategy struct {
-	Name     string
+	ChatId   int64
+	Exchange string
 	Strategy string
 	Ctx      *context.Context
 }

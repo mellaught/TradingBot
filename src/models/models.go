@@ -30,3 +30,9 @@ type User struct {
 	ChatId       int64 `json:"ChatId"`
 	Notification bool  `json:"Notificaions"`
 }
+
+// Message for User from any strategies
+type Message struct {
+	ChatId int64
+	Txt    string
+}

@@ -14,19 +14,22 @@ import (
 )
 
 const (
-	startCommand   = "start"
-	getMainMenu    = "home"
-	tradingCommand = "trading"
-	tricommand     = "tri"
-	fwcommand      = "fw"
-	notifyCommand  = "notify"
-	settingsMenu   = "settings"
-	yesNotify      = "yesNotify"
-	noNotify       = "noNotify"
-	yesStrategy    = "yesStrategy"
-	noStrategy     = "noStrategy"
-	offBot         = "stop"
-	cancelComm     = "cancel"
+	startCommand     = "start"
+	getMainMenu      = "home"
+	exchangesCommand = "exchanges"
+	strategyCommand  = "strategy"
+	binanceCommand   = "binance"
+	poloniexCommand  = "poloniex"
+	trigCommand      = "tri"
+	fwCommand        = "fw"
+	notifyCommand    = "notify"
+	settingsMenu     = "settings"
+	yesNotify        = "yesNotify"
+	noNotify         = "noNotify"
+	yesStrategy      = "yesStrategy"
+	noStrategy       = "noStrategy"
+	offBot           = "stop"
+	cancelCommand    = "cancel"
 )
 
 // Cancel command handler: returns a previous step
@@ -40,13 +43,26 @@ func (b *Bot) CancelHandler(ChatId int64) {
 			return
 		} else if UserHistory[ChatId][3:] == "1" || UserHistory[ChatId][3:] == "-1" {
 			UserHistory[ChatId] = "FW_0"
-			kb := b.YesNoStrategyKb()
-			txt := fmt.Sprintf(strategyPower, "Floyd Warshall")
-			b.EditAndSend(&kb, txt, ChatId)
+			// IF User turned ON strategy
+			if _, ok := b.MembersStrategy[ChatId][b.UserStrategy[ChatId]]["FW"]; ok {
+				kb := b.YesStrategyKb()
+				txt := fmt.Sprintf(strategyPower, "Floyd Warshall")
+				b.EditAndSend(&kb, txt, ChatId)
+			} else {
+				kb := b.NoStrategyKb()
+				txt := fmt.Sprintf(strategyPower, "Floyd Warshall")
+				b.EditAndSend(&kb, txt, ChatId)
+			}
+
 			return
 		}
 
 		// Strategies
+	} else if strings.Contains(UserHistory[ChatId], "exchanges") {
+		fmt.Println(UserHistory[ChatId])
+		kb, txt := b.GetMenuMessage(ChatId)
+		b.EditAndSend(&kb, txt, ChatId)
+		return
 	} else if strings.Contains(UserHistory[ChatId], "strategies") {
 		fmt.Println(UserHistory[ChatId])
 		kb, txt := b.GetMenuMessage(ChatId)
@@ -67,21 +83,25 @@ func (b *Bot) StrategyHandler(exchange, strategy string, on bool, ChatId int64) 
 			}
 		} else {
 			ctx, cancel := context.WithCancel(context.Background())
-			b.MembersStrategy[ChatId][exchange] = &Strategy{
-				Strategy: strategy,
-				Ctx:      &ctx,
-				Cancel:   &cancel,
+			b.MembersStrategy[ChatId][exchange][strategy] = &Strategy{
+				Ctx:    &ctx,
+				Cancel: cancel,
 			}
+			// Send notification to StrategyHandler in App
+			notify := ExchangeStrategy{
+				ChatId:   ChatId,
+				Strategy: strategy,
+				Exchange: exchange,
+				Ctx:      &ctx,
+			}
+
+			b.RunStrategy <- notify
 		}
 		// Turn OFF strategy for User
 	} else {
-		if e, ok := b.MembersStrategy[ChatId]; ok {
-			if s, ok := e[exchange]; ok {
-				fmt.Println(s)
-			} else {
-				log.Printf("Strategy %s on %s exchang for User %d doesn't ON", strategy, exchange, ChatId)
-				return
-			}
+		if e, ok := b.MembersStrategy[ChatId][exchange][strategy]; ok {
+			e.Cancel()
+			log.Printf("Strategy %s OFF on %s exchang for User %d", strategy, exchange, ChatId)
 		} else {
 			log.Printf("Strategy %s on %s exchang for User %d doesn't ON", strategy, exchange, ChatId)
 			return
@@ -110,6 +130,7 @@ func (b *Bot) EditAndSend(kb *tgbotapi.InlineKeyboardMarkup, txt string, ChatId 
 		Text:                  txt,
 		ParseMode:             "markdown",
 	}
+
 	b.Bot.Send(msg)
 }
 

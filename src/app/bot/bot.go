@@ -19,7 +19,7 @@ func InitBot(config *models.BotConfig, members *models.Members) *Bot {
 		Dlg:             map[int64]*Dialog{},
 		UserStrategy:    map[int64]string{},
 		Members:         map[int64]bool{},
-		MembersStrategy: make(map[int64]map[string]*Strategy),
+		MembersStrategy: make(map[int64]map[string]map[string]*Strategy),
 		RunStrategy:     make(chan ExchangeStrategy),
 		StopStrategy:    make(chan ExchangeStrategy),
 		pass:            config.Password,
@@ -157,11 +157,18 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 		return
 
 	// Cancel command return prev step for user
-	case cancelComm:
+	case cancelCommand:
 		b.CancelHandler(ChatId)
 
+	// Get exchanges choose kb
+	case exchangesCommand:
+		UserHistory[ChatId] = "exchanges"
+		kb := b.ExchangesKb()
+		b.EditAndSend(&kb, strategiesMessage, ChatId)
+		return
+
 	// Get Trading choose kb
-	case tradingCommand:
+	case strategyCommand:
 		UserHistory[ChatId] = "strategies"
 		kb := b.StrategiesKb()
 		b.EditAndSend(&kb, strategiesMessage, ChatId)
@@ -184,7 +191,8 @@ func (b *Bot) RunCommand(command string, ChatId int64) {
 		return
 
 	// Floyd Warshall command
-	case fwcommand:
+	case fwCommand:
+		b.UserStrategy[ChatId] = "FW"
 		UserHistory[ChatId] = "FW_0"
 		kb := b.YesNoNotifyKb()
 		txt := fmt.Sprintf(strategyPower, "Floyd Warshall")

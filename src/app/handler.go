@@ -11,27 +11,24 @@ func (a *App) StrategyHandler() {
 	for {
 		select {
 		case run := <-a.Bot.RunStrategy:
-			err := a.StartStrategy(run.Ctx, run.Name, run.Strategy)
-			if err != nil {
-				log.Println(err)
-			}
-			log.Printf("Started %s strategy for %s Exchange", run.Name, run.Strategy)
+			a.StartStrategy(run.Ctx, run.Exchange, run.Strategy, run.ChatId)
+			log.Printf("Started %s strategy for %s Exchange", run.Exchange, run.Strategy)
 			time.Sleep(1 * time.Second)
 
-		case stop := <-a.Bot.StopStrategy:
-			log.Printf("Stoped %s strategy for %s Exchange", stop.Name, stop.Strategy)
-			time.Sleep(1 * time.Second)
+		case message := <-a.FW.Messages:
+			a.Bot.SendMessage(message.Txt, message.ChatId, nil)
 		}
 	}
 }
 
-func (a *App) StartStrategy(ctx *context.Context, exchange, strategy string) error {
+// StartStrategy starts strategy
+func (a *App) StartStrategy(ctx *context.Context, exchange, strategy string, ChatId int64) {
 
 	switch strategy {
 	case "FW":
 		switch exchange {
 		case "Binance":
-			a.FW.Start(ctx, a.Binance)
+			a.FW.Start(ctx, a.Binance, ChatId)
 		case "Poloniex":
 
 		}
@@ -49,6 +46,4 @@ func (a *App) StartStrategy(ctx *context.Context, exchange, strategy string) err
 		case "Ploniex":
 		}
 	}
-
-	return nil
 }

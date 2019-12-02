@@ -15,20 +15,19 @@ func (b *Bot) YesNoNotifyKb() tgbotapi.InlineKeyboardMarkup {
 }
 
 // YesNoStrategyKb: ON or OFF Strategy.
-func (b *Bot) YesNoStrategyKb() tgbotapi.InlineKeyboardMarkup {
+func (b *Bot) YesStrategyKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("ON ✔️", yesStrategy),
-			tgbotapi.NewInlineKeyboardButtonData("OFF ❌", noStrategy),
 		),
 	)
 }
 
 // YesNoTradingKb: ON or OFF Notifications/BOT.
-func (b *Bot) YesNoTradingKb() tgbotapi.InlineKeyboardMarkup {
+func (b *Bot) NoStrategyKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("OFF ❌", offBot),
+			tgbotapi.NewInlineKeyboardButtonData("OFF ❌", noStrategy),
 		),
 	)
 }
@@ -38,17 +37,27 @@ func (b *Bot) MainKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Notifications 🔔", notifyCommand),
-			tgbotapi.NewInlineKeyboardButtonData("Trading 📊", tradingCommand),
+			tgbotapi.NewInlineKeyboardButtonData("Trading 📊", strategyCommand),
 		),
 	)
 }
 
-// MainKb: Notifications ON/OFF, Trading Bot Stop/RUN.
+// StrategiesKb: choose strategy
 func (b *Bot) StrategiesKb() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Floyd Warshall 🖍️", fwcommand),
-			tgbotapi.NewInlineKeyboardButtonData("Triangular 🖍️", tricommand),
+			tgbotapi.NewInlineKeyboardButtonData("Floyd Warshall 🖍️", fwCommand),
+			tgbotapi.NewInlineKeyboardButtonData("Triangular 🖍️", trigCommand),
+		),
+	)
+}
+
+// StrategiesKb: choose exhcange
+func (b *Bot) ExchangesKb() tgbotapi.InlineKeyboardMarkup {
+	return tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("Binance 💱", binanceCommand),
+			tgbotapi.NewInlineKeyboardButtonData("Poloniex 💱", poloniexCommand),
 		),
 	)
 }
@@ -57,7 +66,7 @@ func (b *Bot) StrategiesKb() tgbotapi.InlineKeyboardMarkup {
 func (b *Bot) CancelKeyboard(ChatId int64) tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Cancel", cancelComm),
+			tgbotapi.NewInlineKeyboardButtonData("Cancel", cancelCommand),
 		),
 	)
 }
